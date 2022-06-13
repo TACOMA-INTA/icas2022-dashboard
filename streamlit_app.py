@@ -7,6 +7,8 @@ from google.oauth2 import service_account
 from gsheetsdb import connect
 import pandas as pd
 from pathlib import Path
+from rep import plot_mesh
+
 
 @st.cache(ttl=600)
 def run_query(query):
@@ -47,7 +49,7 @@ conn = connect(credentials=credentials)
 # Uses st.cache to only rerun when the query changes or after 10 min.
 sheet_url = st.secrets["private_gsheets_url"]
 ### DATA LOADING
-
+st.title("ICAS 2022")
 choices_query = run_query(f'SELECT * FROM "{sheet_url}"')
 choices_query = pd.DataFrame(choices_query)
 choices = st.multiselect("Dataset to show",choices_query.dataset.to_list())
@@ -59,8 +61,9 @@ fname = download_drive_dataset(dataset.url.values[0],fname = f"{choices[0]}.npz"
 data = np.load(fname,allow_pickle=True)
 st.write(data.files)
 df = npz_to_df(data)
+mesh = pd.read_pickle("data_files/mesh_garteur.pkl")
 st.write(df)
-
+st.plotly_chart(plot_mesh(mesh,data["y_true"][0,:],data["y_pred"][0,:]))
 
 #### GENERAL STATS
 
