@@ -1,2 +1,4 @@
 gsheetsdb
 gdown
+plotly==5.8.2
+Tacoma-lib==0.1.4
